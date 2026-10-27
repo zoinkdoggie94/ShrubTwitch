@@ -1,0 +1,169 @@
+name: Build ShrubTwitch IPA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Sources/**'
+      - 'Makefile'
+      - '.github/workflows/build-shrubtwitch.yml'
+      - '.github/scripts/**'
+      - 'Assets/shrubtwitch-icon.png'
+  workflow_dispatch:
+    inputs:
+      ipa_url:
+        description: 'Optional direct URL for YOUR decrypted Twitch IPA (use TWITCH_IPA_URL variable automatically)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shrubtwitch-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build dylib + inject IPA
+    runs-on: macos-15
+    timeout-minutes: 25
+    env:
+      THEOS: ${{ github.workspace }}/.theos-toolchain
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+      HOMEBREW_NO_ANALYTICS: '1'
+      IPA_SOURCE: ${{ inputs.ipa_url || vars.TWITCH_IPA_URL || secrets.TWITCH_IPA_URL }}
+    steps:
+      - name: Checkout ShrubTwitch
+        uses: actions/checkout@v4
+
+      # Small dylib cache: when only the IPA changes, SKIP the entire native build.
+      - name: Restore compiled dylib
+        id: dylib-cache
+        uses: actions/cache@v4
+        with:
+          path: .buildcache/ShrubTwitch.dylib
+          key: shrubtwitch-dylib-v2-${{ runner.os }}-${{ hashFiles('Makefile', 'Sources/**/*') }}
+
+      - name: Restore Theos and patched SDK
+        if: steps.dylib-cache.outputs.cache-hit != 'true'
+        id: theos-cache
+        uses: actions/cache@v4
+        with:
+          path: .theos-toolchain
+          key: shrubtwitch-theos-xcode-${{ runner.os }}-v3
+
+      - name: Setup Theos (first cache miss only)
+        if: steps.dylib-cache.outputs.cache-hit != 'true' && steps.theos-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --depth 1 --recursive https://github.com/theos/theos.git "$THEOS"
+          mkdir -p "$THEOS/sdks"
+          echo 'Theos installed.'
+
+      - name: Link runner iPhoneOS SDK
+        if: steps.dylib-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK_PATH="$(xcrun --sdk iphoneos --show-sdk-path)"
+          SDK_VERSION="$(xcrun --sdk iphoneos --show-sdk-version)"
+          test -d "$SDK_PATH"
+          mkdir -p "$THEOS/sdks"
+          ln -sfn "$SDK_PATH" "$THEOS/sdks/iPhoneOS${SDK_VERSION}.sdk"
+          echo "SDK_VERSION=$SDK_VERSION" >> "$GITHUB_ENV"
+          echo "iPhoneOS SDK ${SDK_VERSION}"
+
+      - name: Install GNU Make (native compilation only)
+        if: steps.dylib-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew install make
+          echo "$(brew --prefix make)/libexec/gnubin" >> "$GITHUB_PATH"
+
+      - name: Compile ShrubTwitch.dylib
+        if: steps.dylib-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$THEOS/bin:$PATH"
+          make -j"$(sysctl -n hw.ncpu)" FINALPACKAGE=1 TARGET="iphone:clang:${SDK_VERSION}:14.0"
+          mkdir -p .buildcache
+          DYLIB=$(find .theos -name 'ShrubTwitch.dylib' -type f -print -quit)
+          if [ -z "$DYLIB" ]; then
+            echo 'ERROR: ShrubTwitch.dylib was not built.' >&2
+            find .theos -name '*.dylib' || true
+            exit 1
+          fi
+          cp "$DYLIB" .buildcache/ShrubTwitch.dylib
+          file .buildcache/ShrubTwitch.dylib
+
+      - name: Install injection tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew install ldid
+          python3 -m pip install --quiet --break-system-packages 'lief==0.17.6'
+          python3 -c 'import lief; print("LIEF:", lief.__version__)'
+          file .buildcache/ShrubTwitch.dylib
+
+      - name: Fetch YOUR decrypted Twitch IPA
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$IPA_SOURCE" ]; then
+            echo 'Missing IPA. Add repository variable TWITCH_IPA_URL with a direct downloadable link to your own decrypted Twitch IPA, or fill in the workflow input ipa_url.' >&2
+            exit 1
+          fi
+          # Do not print the URL or signed query tokens in logs.
+          curl --fail --location --silent --show-error --retry 2 \
+            --connect-timeout 30 --max-time 600 "$IPA_SOURCE" -o "$RUNNER_TEMP/Twitch.ipa"
+          python3 - <<'PY'
+          import os, zipfile
+          path = os.path.join(os.environ['RUNNER_TEMP'], 'Twitch.ipa')
+          if not zipfile.is_zipfile(path):
+              raise SystemExit('Downloaded file is not an IPA/ZIP. Use a DIRECT file URL (not a sharing-page URL).')
+          with zipfile.ZipFile(path) as z:
+              if not any(n.startswith('Payload/') and n.endswith('/Info.plist') for n in z.namelist()):
+                  raise SystemExit('IPA has no Payload/*.app/Info.plist. Is this a decrypted Twitch IPA?')
+          print('Twitch IPA verified:', round(os.path.getsize(path)/1048576,1), 'MiB')
+          PY
+
+      - name: Inject dylib + package ShrubTwitch IPA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/inject_ipa.py \
+            "$RUNNER_TEMP/Twitch.ipa" \
+            .buildcache/ShrubTwitch.dylib \
+            "$RUNNER_TEMP/output"
+          echo "IPA_OUTPUT=$(find "$RUNNER_TEMP/output" -maxdepth 1 -name '*.ipa' -print -quit)" >> "$GITHUB_ENV"
+
+      - name: Upload finished IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShrubTwitch-IPA-${{ github.run_number }}
+          path: ${{ env.IPA_OUTPUT }}
+          retention-days: 3
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Upload standalone dylib
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShrubTwitch-dylib-${{ github.run_number }}
+          path: .buildcache/ShrubTwitch.dylib
+          retention-days: 7
+          compression-level: 0
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo '## ShrubTwitch build complete' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Download the **ShrubTwitch-IPA** artifact from this workflow run.' >> "$GITHUB_STEP_SUMMARY"
+          echo '' >> "$GITHUB_STEP_SUMMARY"
+          echo 'The IPA is patched/ad-hoc signed, NOT certificate-signed for sideloading. Sign it with your usual iOS signer before installing.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'This workflow does not post or publish the Twitch IPA to GitHub Releases.' >> "$GITHUB_STEP_SUMMARY"

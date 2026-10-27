@@ -1,18 +1,18 @@
 # ============================================================
-# Makefile — TwitchPlusK (substrate-free, sideload)
+# Makefile — ShrubTwitch (substrate-free, sideload)
 # ============================================================
 
 ARCHS = arm64
-TWITCHPLUSK_VERSION = 2.0.1
+SHRUBTWITCH_VERSION = 1.2.0
 TARGET = iphone:clang:16.5:14.0
 
 include $(THEOS)/makefiles/common.mk
 
 # ── Nom du dylib ──
-LIBRARY_NAME = TwitchPlusK
+LIBRARY_NAME = ShrubTwitch
 
 # ── Fichiers source regroupés par domaine ──
-TwitchPlusK_FILES = \
+ShrubTwitch_FILES = \
     Sources/Adblock/tpK-adblock-settings.m \
     Sources/Adblock/Proxy/tpK-adblock-proxy-status.m \
     Sources/Adblock/Proxy/tpK-adblock-data.m \
@@ -31,6 +31,7 @@ TwitchPlusK_FILES = \
     Sources/Core/tpK-channel-resolver.m \
     Sources/Settings/tpK-settings-controller.m \
     Sources/Settings/tpK-settings-transfer.m \
+    Sources/Settings/st-features.m \
     Sources/Logs/tpK-logs-controller.m \
     Sources/Chat/tpK-chat-appearance-config.m \
     Sources/Chat/tpK-chat-custom-view.m \
@@ -62,8 +63,8 @@ TwitchPlusK_FILES = \
     Sources/UI/tpK-oled-mode.m
 
 # ── Options de compilation ──
-TwitchPlusK_CFLAGS := \
-    -DTPK_BUILD_VERSION='"$(TWITCHPLUSK_VERSION)"' \
+ShrubTwitch_CFLAGS := \
+    -DTPK_BUILD_VERSION='"$(SHRUBTWITCH_VERSION)"' \
     -fobjc-arc \
     -I$(THEOS_PROJECT_DIR) \
     -I$(THEOS_PROJECT_DIR)/Sources \
@@ -71,12 +72,12 @@ TwitchPlusK_CFLAGS := \
     -Wno-unused-function
 
 # ── Options linker ──
-TwitchPlusK_LDFLAGS = \
+ShrubTwitch_LDFLAGS = \
     -Wl,-no_warn_inits \
     -Wl,-w
 
 # ── Frameworks Apple ──
-TwitchPlusK_FRAMEWORKS = UIKit Foundation QuartzCore ImageIO AVFoundation MediaPlayer
+ShrubTwitch_FRAMEWORKS = UIKit Foundation QuartzCore ImageIO AVFoundation MediaPlayer
 
 include $(THEOS_MAKE_PATH)/library.mk
 

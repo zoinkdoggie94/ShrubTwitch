@@ -1,6 +1,7 @@
-// TwitchPlusK settings UI.
+// ShrubTwitch branded settings UI, preserving upstream TwitchPlusK hooks.
 
 #import "Settings/tpK-settings-controller.h"
+#import "Settings/st-features.h"
 #import "Core/tpK-core-manager.h"
 #import "Core/tpK-channel-resolver.h"
 #import "Logs/tpK-logs-controller.h"
@@ -34,21 +35,21 @@
 #import <objc/runtime.h>
 #define kTCLiveAutoCollectChannelPoints @"TCDBGLiveAutoCollectChannelPoints"
 static NSString *const kTPKFavoriteEmoteNamesKey = @"tpk_favorite_emote_names";
-static NSString *const kTPKGitHubURL = @"https://github.com/Knoks1111/TwitchPlusK";
-static NSString *const kTPKGitHubAvatarURL = @"https://github.com/Knoks1111.png?size=96";
+static NSString *const kTPKGitHubURL = @"https://github.com/zoinkdoggie94/ShrubTwitch";
+static NSString *const kTPKGitHubAvatarURL = @"https://github.com/zoinkdoggie94.png?size=96";
 
 // MARK: - Palette couleurs
 
 // Main background; OLED uses pure black.
 static UIColor *TPKBg(void) {
     if (TPKOLEDModeEnabled()) return UIColor.blackColor;
-    return [UIColor colorWithRed:0.055 green:0.055 blue:0.063 alpha:1.0]; // #0E0E10
+    return [UIColor colorWithRed:0.055 green:0.063 blue:0.078 alpha:1.0]; // ShrubTwitch charcoal
 }
 
 // Cell background; keep grouped cells visible in OLED mode.
 static UIColor *TPKCellBg(void) {
     if (TPKOLEDModeEnabled()) return [UIColor colorWithWhite:0.05 alpha:1.0];
-    return [UIColor colorWithRed:0.122 green:0.122 blue:0.137 alpha:1.0]; // #1F1F23
+    return [UIColor colorWithRed:0.095 green:0.108 blue:0.133 alpha:1.0]; // dark slate
 }
 
 // Table separators.
@@ -59,7 +60,7 @@ static UIColor *TPKSeparatorColor(void) {
 
 // Accent violet.
 UIColor *TPKAccent(void) {
-    return [UIColor colorWithRed:0.557 green:0.271 blue:0.878 alpha:1.0]; // #8E45E0
+    return [UIColor colorWithRed:0.345 green:0.855 blue:0.573 alpha:1.0]; // ShrubHub green
 }
 
 // Secondary gray.
@@ -483,12 +484,12 @@ static UITableViewCell *TPKGitHubRepositoryCell(void) {
     [cell.contentView addSubview:avatarRing];
 
     UILabel *title = [[UILabel alloc] init];
-    title.text = L(@"settings_github_title");
+    title.text = @"ShrubTwitch on GitHub";
     title.font = [UIFont systemFontOfSize:17 weight:UIFontWeightRegular];
     title.textColor = UIColor.whiteColor;
 
     UILabel *subtitle = [[UILabel alloc] init];
-    subtitle.text = L(@"settings_github_subtitle");
+    subtitle.text = @"Source, releases, issues and credits";
     subtitle.font = [UIFont systemFontOfSize:12 weight:UIFontWeightRegular];
     subtitle.textColor = TPKGray();
     subtitle.numberOfLines = 0;
@@ -533,7 +534,7 @@ static UITableViewCell *TPKVersionsCell(void) {
     NSString *update = TPKUpdateCheckerAvailableVersion();
 
     UILabel *titleLabel = [[UILabel alloc] init];
-    titleLabel.text = [@"TwitchPlusK " stringByAppendingString:build];
+    titleLabel.text = [@"ShrubTwitch " stringByAppendingString:build];
     titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightRegular];
     titleLabel.textColor = TPKGray();
 
@@ -835,7 +836,7 @@ static UIView *TPKSectionHeader(NSString *title, BOOL withLogo, NSString *infoKe
     if (withLogo) {
         // TwitchPlusK logo.
         NSData *logoData = [[NSData alloc]
-            initWithBase64EncodedString:kTPKTwitchPlusKLogoBase64
+            initWithBase64EncodedString:kSTLogoBase64
                                 options:NSDataBase64DecodingIgnoreUnknownCharacters];
         UIImage *logoImg = [UIImage imageWithData:logoData scale:2.0];
 
@@ -1056,7 +1057,7 @@ static UITableViewCell *tpk_settingsCell(id self, SEL cmd, UITableView *tableVie
     cell.textLabel.numberOfLines = 0;
     // TwitchPlusK logo.
     NSData *logoData = [[NSData alloc]
-        initWithBase64EncodedString:kTPKTwitchPlusKLogoBase64
+        initWithBase64EncodedString:kSTLogoBase64
                             options:NSDataBase64DecodingIgnoreUnknownCharacters];
     UIImage *logo = [UIImage imageWithData:logoData scale:6.0];
     if (logo) cell.imageView.image = logo;
@@ -1134,9 +1135,61 @@ typedef NS_ENUM(NSInteger, TPKHomeSection) {
     TPKHomeSectionLanguage = 1,
 };
 
+
+// Standalone ShrubTwitch hub: flat dark card, native text, no web dependencies.
+static UIView *ShrubTwitchHero(CGFloat width) {
+    CGFloat fullWidth = MAX(width, 280.0);
+    UIView *container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, fullWidth, 178)];
+    container.backgroundColor = UIColor.clearColor;
+    UIView *card = [[UIView alloc] initWithFrame:CGRectMake(16, 10, fullWidth - 32, 152)];
+    card.backgroundColor = [UIColor colorWithRed:0.095 green:0.108 blue:0.133 alpha:1];
+    card.layer.cornerRadius = 18;
+    card.layer.borderWidth = 1;
+    card.layer.borderColor = [UIColor colorWithRed:0.20 green:0.24 blue:0.28 alpha:1].CGColor;
+    card.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [container addSubview:card];
+
+    NSData *iconData = [[NSData alloc] initWithBase64EncodedString:kSTLogoBase64 options:0];
+    UIImageView *icon = [[UIImageView alloc] initWithImage:[UIImage imageWithData:iconData]];
+    icon.frame = CGRectMake(18, 18, 52, 52);
+    icon.layer.cornerRadius = 13;
+    icon.clipsToBounds = YES;
+    icon.contentMode = UIViewContentModeScaleAspectFit;
+    [card addSubview:icon];
+
+    UILabel *brand = [[UILabel alloc] initWithFrame:CGRectMake(82, 16, MAX(fullWidth - 130, 140), 30)];
+    brand.text = @"ShrubTwitch";
+    brand.font = [UIFont systemFontOfSize:24 weight:UIFontWeightBold];
+    brand.textColor = UIColor.whiteColor;
+    brand.adjustsFontSizeToFitWidth = YES;
+    brand.minimumScaleFactor = 0.7;
+    [card addSubview:brand];
+
+    UILabel *byline = [[UILabel alloc] initWithFrame:CGRectMake(83, 47, MAX(fullWidth - 130, 140), 20)];
+    byline.text = @"by ShrubHub";
+    byline.font = [UIFont systemFontOfSize:12 weight:UIFontWeightSemibold];
+    byline.textColor = TPKAccent();
+    [card addSubview:byline];
+
+    UIView *line = [[UIView alloc] initWithFrame:CGRectMake(18, 83, MAX(fullWidth - 68, 220), 1)];
+    line.backgroundColor = [UIColor colorWithRed:0.22 green:0.24 blue:0.29 alpha:1];
+    line.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [card addSubview:line];
+
+    UILabel *detail = [[UILabel alloc] initWithFrame:CGRectMake(18, 96, MAX(fullWidth - 68, 220), 40)];
+    detail.text = @"ShrubTwitch 1.2  ·  by ShrubHub\nProfiles  ·  Focus  ·  Bookmarks";
+    detail.numberOfLines = 2;
+    detail.font = [UIFont systemFontOfSize:13 weight:UIFontWeightMedium];
+    detail.textColor = [UIColor colorWithWhite:0.80 alpha:1];
+    detail.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [card addSubview:detail];
+    return container;
+}
+
 @implementation TPKSettingsController
 
 + (void)installTwitchSettingsIntegration {
+    STSetupChannelProfiles();
     Class target = NSClassFromString(@"_TtC6Twitch25AccountMenuViewController");
     if (!target) {
         [[TPKManager sharedManager]
@@ -1184,6 +1237,7 @@ typedef NS_ENUM(NSInteger, TPKHomeSection) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     TPKStyleTableView(self.tableView);
+    self.tableView.tableHeaderView = ShrubTwitchHero(self.tableView.bounds.size.width);
     [self buildNavBar];
 
     // Refresh visible text when the language changes.
@@ -1223,7 +1277,7 @@ typedef NS_ENUM(NSInteger, TPKHomeSection) {
 - (void)buildNavBar {
     // Navigation title and logo.
     NSData *logoData = [[NSData alloc]
-        initWithBase64EncodedString:kTPKTwitchPlusKLogoBase64
+        initWithBase64EncodedString:kSTLogoBase64
                             options:NSDataBase64DecodingIgnoreUnknownCharacters];
     UIImage *logo = [UIImage imageWithData:logoData scale:2.0];
 
@@ -1233,7 +1287,7 @@ typedef NS_ENUM(NSInteger, TPKHomeSection) {
         iv.contentMode = UIViewContentModeScaleAspectFit;
         iv.translatesAutoresizingMaskIntoConstraints = NO;
 
-        NSString *badgeText = L(@"label_twitchplusk_badge");
+        NSString *badgeText = @"ShrubTwitch";
         UILabel *lbl = [[UILabel alloc] init];
         lbl.text = badgeText;
         lbl.font = [UIFont systemFontOfSize:17 weight:UIFontWeightBold];
@@ -1259,12 +1313,22 @@ typedef NS_ENUM(NSInteger, TPKHomeSection) {
         self.title = L(@"title_7tv_settings");
     }
 
+    UIBarButtonItem *quick = [[UIBarButtonItem alloc]
+        initWithTitle:@"Quick" style:UIBarButtonItemStylePlain
+        target:self action:@selector(st_openQuickPanel:)];
+    quick.tintColor = TPKAccent();
+    self.navigationItem.leftBarButtonItem = quick;
+
     if (self.openedAsModal) {
         UIBarButtonItem *close = [[UIBarButtonItem alloc]
             initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                                  target:self action:@selector(closeTapped)];
         self.navigationItem.rightBarButtonItem = close;
     }
+}
+
+- (void)st_openQuickPanel:(UIBarButtonItem *)button {
+    STPresentQuickPanel(self, button);
 }
 
 - (void)closeTapped {
@@ -1280,7 +1344,7 @@ typedef NS_ENUM(NSInteger, TPKHomeSection) {
 
 - (NSInteger)tableView:(UITableView *)tv numberOfRowsInSection:(NSInteger)s {
     switch (s) {
-        case TPKHomeSectionMain:     return 4; // Apparence / Contenu / Adblock / Avancé
+        case TPKHomeSectionMain:     return 8; // Native ShrubTwitch features + preserved base controls
         case TPKHomeSectionLanguage: return 3;
         default: return 0;
     }
@@ -1299,7 +1363,7 @@ typedef NS_ENUM(NSInteger, TPKHomeSection) {
 
 - (UIView *)tableView:(UITableView *)tv viewForHeaderInSection:(NSInteger)s {
     switch (s) {
-        case TPKHomeSectionMain:     return TPKSectionHeader(L(@"title_7tv_settings"), YES, nil);
+        case TPKHomeSectionMain:     return TPKSectionHeader(@"Explore ShrubTwitch", NO, nil);
         case TPKHomeSectionLanguage: return TPKSectionHeader(L(@"section_langue"), NO, nil);
         default: return [[UIView alloc] init];
     }
@@ -1364,10 +1428,14 @@ typedef NS_ENUM(NSInteger, TPKHomeSection) {
         NSString *sfName, *title, *subtitle;
         UIColor *iconTint;
         switch (ip.row) {
-            case 0: sfName=@"paintbrush.fill";            title=L(@"title_apparence"); subtitle=L(@"menu_apparence_subtitle"); iconTint=TPKAccent(); break;
-            case 1: sfName=@"folder.fill";                 title=L(@"title_contenu");   subtitle=L(@"menu_contenu_subtitle"); iconTint=UIColor.systemBlueColor; break;
-            case 2: sfName=@"shield.slash.fill";           title=L(@"title_adblock");   subtitle=L(@"menu_adblock_subtitle"); iconTint=UIColor.systemRedColor; break;
-            case 3: sfName=@"wrench.and.screwdriver.fill"; title=L(@"title_avance");    subtitle=L(@"menu_avance_subtitle"); iconTint=UIColor.systemIndigoColor; break;
+            case 0: sfName=@"shield.lefthalf.filled";    title=@"Ad Blocking";          subtitle=@"Local VAFT, proxy modes and status"; iconTint=TPKAccent(); break;
+            case 1: sfName=@"play.rectangle.fill";       title=@"Playback & Chat";      subtitle=@"Player options, channels and chat tools"; iconTint=UIColor.systemPurpleColor; break;
+            case 2: sfName=@"paintbrush.pointed.fill";   title=@"Appearance & Emotes";  subtitle=@"Themes, 7TV, BTTV, FFZ and chat styling"; iconTint=UIColor.systemTealColor; break;
+            case 3: sfName=@"slider.horizontal.3";       title=@"Advanced & Utilities"; subtitle=@"Diagnostics, backups and more"; iconTint=UIColor.systemIndigoColor; break;
+            case 4: sfName=@"rectangle.stack.fill";     title=@"Stream Profiles & Notes"; subtitle=@"Channel-specific chat layout and private notes"; iconTint=TPKAccent(); break;
+            case 5: sfName=@"text.bubble.fill";          title=@"Chat Focus Mode";        subtitle=@"Hide chosen keywords in custom chat"; iconTint=UIColor.systemPurpleColor; break;
+            case 6: sfName=@"bookmark.fill";             title=@"ShrubBookmarks";        subtitle=@"Save and organize channels locally"; iconTint=TPKAccent(); break;
+            case 7: sfName=@"info.circle.fill";          title=@"About ShrubTwitch";     subtitle=@"Version, source and attribution"; iconTint=TPKAccent(); break;
             default: return [[UITableViewCell alloc] init];
         }
         // Keep concise category summaries visible.
@@ -1437,7 +1505,7 @@ typedef NS_ENUM(NSInteger, TPKHomeSection) {
 
     if (ip.section == TPKHomeSectionLanguage && ip.row == 2) {
         if (TPKUpdateCheckerAvailableVersion()) {
-            NSURL *url = [NSURL URLWithString:@"https://github.com/Knoks1111/TwitchPlusK/releases/latest"];
+            NSURL *url = [NSURL URLWithString:@"https://github.com/zoinkdoggie94/ShrubTwitch/releases/latest"];
             if (url) {
                 [[UIApplication sharedApplication] openURL:url
                                                    options:@{}
@@ -1450,10 +1518,35 @@ typedef NS_ENUM(NSInteger, TPKHomeSection) {
     UIViewController *dest = nil;
     if (ip.section == TPKHomeSectionMain) {
         switch (ip.row) {
-            case 0: dest = [[TPKAppearancePageController alloc] init]; break;
-            case 1: dest = [[TPKContentPageController    alloc] init]; break;
-            case 2: dest = [[TPKAdblockPageController    alloc] init]; break;
-            case 3: dest = [[TPKAdvancedPageController   alloc] init]; break;
+            case 0: dest = [[TPKAdblockPageController alloc] init]; break;
+            case 1: dest = [[TPKContentPageController alloc] init]; break;
+            case 2: dest = [[TPKAppearancePageController alloc] init]; break;
+            case 3: dest = [[TPKAdvancedPageController alloc] init]; break;
+            case 4: dest = [[STChannelToolsController alloc] init]; break;
+            case 5: dest = [[STChatFocusController alloc] init]; break;
+            case 6: dest = [[STBookmarksController alloc] init]; break;
+            case 7: {
+                NSString *message = [NSString stringWithFormat:
+                    @"Version %@\n\nMade by ShrubHub.\n\nBased on TwitchPlusK by Knoks1111 and its contributors.\nIncludes upstream ad-blocking, emote and chat components. Licensed under GPLv3; the original copyright notices are retained.", @TPK_BUILD_VERSION];
+                UIAlertController *about = [UIAlertController
+                    alertControllerWithTitle:@"About ShrubTwitch" message:message
+                    preferredStyle:UIAlertControllerStyleAlert];
+                about.view.tintColor = TPKAccent();
+                [about addAction:[UIAlertAction actionWithTitle:@"Source & license"
+                    style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                        NSURL *url = [NSURL URLWithString:kTPKGitHubURL];
+                        [UIApplication.sharedApplication openURL:url options:@{} completionHandler:nil];
+                    }]];
+                [about addAction:[UIAlertAction actionWithTitle:@"Upstream credits"
+                    style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                        NSURL *url = [NSURL URLWithString:@"https://github.com/Knoks1111/TwitchPlusK"];
+                        [UIApplication.sharedApplication openURL:url options:@{} completionHandler:nil];
+                    }]];
+                [about addAction:[UIAlertAction actionWithTitle:@"Done"
+                    style:UIAlertActionStyleCancel handler:nil]];
+                [self presentViewController:about animated:YES completion:nil];
+                break;
+            }
         }
     }
     if (dest) [self.navigationController pushViewController:dest animated:YES];
@@ -3267,7 +3360,7 @@ static NSArray<TPKMultiSelectionOption *> *TPKExternalProviderSelectionOptions(v
                     self, @selector(toggleMixedPicker:), nil);
                 // Logo TwitchPlusK à la place du symbole.
                 NSData *tpkData = [[NSData alloc]
-                    initWithBase64EncodedString:kTPKTwitchPlusKLogoBase64
+                    initWithBase64EncodedString:kSTLogoBase64
                                         options:NSDataBase64DecodingIgnoreUnknownCharacters];
                 UIImage *tpkImg = [UIImage imageWithData:tpkData scale:2.0];
                 if (tpkImg) {

@@ -31,7 +31,7 @@ static __weak UIButton *tpk_pickerChatButtonReplacement = nil;
 
 static UIImage *tpk_pickerLogoImage(CGFloat targetHeight) {
     NSData *logoData = [[NSData alloc]
-        initWithBase64EncodedString:kTPKTwitchPlusKLogoBase64
+        initWithBase64EncodedString:kSTLogoBase64
                             options:NSDataBase64DecodingIgnoreUnknownCharacters];
     UIImage *icon = [UIImage imageWithData:logoData scale:1.0];
     if (!icon) return nil;
@@ -1582,7 +1582,7 @@ static UIImage *TPKPickerAspectFitProviderLogo(UIImage *image, CGFloat maxWidth,
                               kTPKPickerFloatSize, kTPKPickerFloatSize);
     allBtn.tag = TPKPickerTabAll;
     NSData *tpkData = [[NSData alloc]
-        initWithBase64EncodedString:kTPKTwitchPlusKLogoBase64
+        initWithBase64EncodedString:kSTLogoBase64
                             options:NSDataBase64DecodingIgnoreUnknownCharacters];
     UIImage *tpkLogo = TPKPickerAspectFitProviderLogo(
         [UIImage imageWithData:tpkData scale:UIScreen.mainScreen.scale], 22.0, 14.0);

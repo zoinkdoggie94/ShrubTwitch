@@ -3,8 +3,8 @@
 #import "Settings/tpK-settings-controller.h"
 #import <UIKit/UIKit.h>
 
-static NSString *const kIgnored = @"tpk_update_ignored_version";
-static NSString *const kManifest = @"tpk_update_manifest";
+static NSString *const kIgnored = @"shrubtwitch_update_ignored_version";
+static NSString *const kManifest = @"shrubtwitch_update_manifest";
 static BOOL checkedThisLaunch;
 
 static BOOL TPKValidVersion(id value) {
@@ -50,7 +50,7 @@ static BOOL TPKPresentUpdate(void) {
         preferredStyle:UIAlertControllerStyleAlert];
     alert.view.tintColor = TPKAccent();
     [alert addAction:[UIAlertAction actionWithTitle:L(@"update_open") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [UIApplication.sharedApplication openURL:[NSURL URLWithString:@"https://github.com/Knoks1111/TwitchPlusK/releases/latest"] options:@{} completionHandler:nil];
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:@"https://github.com/zoinkdoggie94/ShrubTwitch/releases/latest"] options:@{} completionHandler:nil];
     }]];
     [alert addAction:[UIAlertAction actionWithTitle:L(@"update_later") style:UIAlertActionStyleCancel handler:nil]];
     [alert addAction:[UIAlertAction actionWithTitle:L(@"update_ignore") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -72,7 +72,7 @@ static void TPKCheckForUpdate(void) {
     if (checkedThisLaunch || UIApplication.sharedApplication.applicationState != UIApplicationStateActive) return;
     NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
     checkedThisLaunch = YES;
-    NSURL *url = [NSURL URLWithString:@"https://raw.githubusercontent.com/Knoks1111/TwitchPlusK/main/update.json"];
+    NSURL *url = [NSURL URLWithString:@"https://raw.githubusercontent.com/zoinkdoggie94/ShrubTwitch/main/update.json"];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:15];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:NSURLSessionConfiguration.ephemeralSessionConfiguration];
     [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {

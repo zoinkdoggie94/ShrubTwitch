@@ -1,6 +1,6 @@
 #import "Settings/tpK-settings-transfer.h"
 
-NSString *const TPKSettingsTransferErrorDomain = @"TwitchPlusK.SettingsTransfer";
+NSString *const TPKSettingsTransferErrorDomain = @"ShrubTwitch.SettingsTransfer";
 
 static NSString *const TPKSettingsTransferMarkerKey = @"twitchplusk_settings";
 static NSString *const TPKSettingsTransferValuesKey = @"values";
@@ -115,7 +115,7 @@ NSString *TPKSettingsExportFileName(void) {
     NSDateFormatter *formatter = [NSDateFormatter new];
     formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
     formatter.dateFormat = @"yyyy-MM-dd";
-    return [NSString stringWithFormat:@"TwitchPlusK-Settings-%@.plist",
+    return [NSString stringWithFormat:@"ShrubTwitch-Settings-%@.plist",
             [formatter stringFromDate:[NSDate date]]];
 }
 
@@ -123,7 +123,7 @@ NSUInteger TPKSettingsImportData(NSData *data, NSError **error) {
     if (!data.length) {
         if (error) *error = TPKSettingsTransferError(
             TPKSettingsTransferErrorInvalidArchive,
-            @"This is not a TwitchPlusK settings file.");
+            @"This is not a compatible ShrubTwitch settings file.");
         return NSNotFound;
     }
     NSError *parseError = nil;
@@ -134,7 +134,7 @@ NSUInteger TPKSettingsImportData(NSData *data, NSError **error) {
     if (![archive isKindOfClass:NSDictionary.class]) {
         if (error) *error = parseError ?: TPKSettingsTransferError(
             TPKSettingsTransferErrorInvalidArchive,
-            @"This is not a TwitchPlusK settings file.");
+            @"This is not a compatible ShrubTwitch settings file.");
         return NSNotFound;
     }
     NSDictionary *dictionary = archive;
@@ -143,7 +143,7 @@ NSUInteger TPKSettingsImportData(NSData *data, NSError **error) {
         ![dictionary[TPKSettingsTransferValuesKey] isKindOfClass:NSDictionary.class]) {
         if (error) *error = TPKSettingsTransferError(
             TPKSettingsTransferErrorInvalidArchive,
-            @"This is not a TwitchPlusK settings file.");
+            @"This is not a compatible ShrubTwitch settings file.");
         return NSNotFound;
     }
 

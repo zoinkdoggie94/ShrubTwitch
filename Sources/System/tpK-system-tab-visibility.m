@@ -12,7 +12,8 @@ void tpk_registerTabVisibilityDefaults(void) {
     static dispatch_once_t once;
     dispatch_once(&once, ^{
         NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
-        for (TPKTabItem item = 0; item < TPK_TAB_ITEM_COUNT; item++) {            defaults[TPKTabKey(item)] = @NO;
+        for (TPKTabItem item = 0; item < TPK_TAB_ITEM_COUNT; item++) {            defaults[TPKTabKey(item)] = @NO;
+
         }
         [NSUserDefaults.standardUserDefaults registerDefaults:defaults];
     });

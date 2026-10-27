@@ -407,7 +407,7 @@ void tas_diagnostics_initialize(void) {
     bool log_registered = register_log_class();
     fprintf(stderr, "[TAS] diagnostics log viewer %s\n",
             log_registered ? "registered" : "unavailable");
-    tas_diag_log("PORT_LOADED", "VAFT v24 iOS port initialized; hosted by TwitchPlusK");
+    tas_diag_log("PORT_LOADED", "VAFT v24 iOS port initialized; hosted by ShrubTwitch");
 }
 
 /* ── TwitchPlusK integration surface (thin wrappers, no logic changes) ── */

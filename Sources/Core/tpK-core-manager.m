@@ -25,6 +25,7 @@
 #import "Core/tpK-channel-resolver.h"
 #import "Chat/tpK-chat-message.h"
 #import "Settings/tpK-settings-controller.h"
+#import "Settings/st-features.h"
 #import "Emote/tpK-network-emote-cache.h"
 #import "UI/7tv-ui-logo.h"
 #import "UI/tpK-ui-logo.h"
@@ -873,13 +874,13 @@ static NSString *TPKNormalizedTwitchBearerToken(NSString *value) {
         btn.backgroundColor     = [UIColor colorWithWhite:0.0 alpha:0.92];
         btn.layer.cornerRadius  = size / 2.0;
         btn.layer.borderWidth   = 1.0;
-        btn.layer.borderColor   = [UIColor colorWithWhite:1.0 alpha:0.85].CGColor;
+        btn.layer.borderColor   = [UIColor colorWithRed:0.38 green:0.92 blue:0.55 alpha:0.85].CGColor;
         btn.layer.shadowColor   = [UIColor blackColor].CGColor;
         btn.layer.shadowOffset  = CGSizeMake(0, 2);
         btn.layer.shadowRadius  = 4;
         btn.layer.shadowOpacity = 0.4;
         NSData *tpkData = [[NSData alloc]
-            initWithBase64EncodedString:kTPKTwitchPlusKLogoBase64
+            initWithBase64EncodedString:kSTLogoBase64
                                 options:NSDataBase64DecodingIgnoreUnknownCharacters];
         UIImage *tpkImg = [UIImage imageWithData:tpkData scale:UIScreen.mainScreen.scale];
         if (tpkImg) {
@@ -903,6 +904,10 @@ static NSString *TPKNormalizedTwitchBearerToken(NSString *value) {
         }
         [btn addTarget:self action:@selector(settingsButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
+        UILongPressGestureRecognizer *quickPress = [[UILongPressGestureRecognizer alloc]
+            initWithTarget:self action:@selector(st_quickPanelLongPress:)];
+        quickPress.minimumPressDuration = 0.55;
+        [btn addGestureRecognizer:quickPress];
         [btn addGestureRecognizer:[[UIPanGestureRecognizer alloc]
             initWithTarget:self action:@selector(handleSettingsButtonDrag:)]];
 
@@ -910,6 +915,13 @@ static NSString *TPKNormalizedTwitchBearerToken(NSString *value) {
         self.settingsButton = btn;
 
     });
+}
+
+- (void)st_quickPanelLongPress:(UILongPressGestureRecognizer *)gesture {
+    if (gesture.state != UIGestureRecognizerStateBegan) return;
+    if (self.menuWindow && !self.menuWindow.hidden) return;
+    UIViewController *root = self.floatingWindow.rootViewController;
+    if (root && !root.presentedViewController) STPresentQuickPanel(root, nil);
 }
 
 - (void)settingsButtonTapped:(UIButton *)sender {
@@ -1460,7 +1472,7 @@ static void tpk_fetchRecentHistory(NSString *channel, NSUInteger generation) {
     NSMutableURLRequest *request = [NSMutableURLRequest
         requestWithURL:[NSURL URLWithString:urlString]];
     request.timeoutInterval = 8.0;
-    [request setValue:@"TwitchPlusK/1.0" forHTTPHeaderField:@"User-Agent"];
+    [request setValue:@"ShrubTwitch/1.0" forHTTPHeaderField:@"User-Agent"];
 
     [[[NSURLSession sharedSession] dataTaskWithRequest:request
         completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {

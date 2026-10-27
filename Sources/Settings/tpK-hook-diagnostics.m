@@ -180,161 +180,161 @@ void TPKHookDiagnosticsRegisterKnownTargets(void) {
         // fonctionnalités indépendantes des deux moteurs AdBlock.
         // ────────────────────────────────────────────────────────────────
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] AccountMenuViewController -numberOfSectionsInTableView:",
+            @"[ShrubTwitch] AccountMenuViewController -numberOfSectionsInTableView:",
             @[@"_TtC6Twitch25AccountMenuViewController"],
             @"numberOfSectionsInTableView:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] AccountMenuViewController -tableView:numberOfRowsInSection:",
+            @"[ShrubTwitch] AccountMenuViewController -tableView:numberOfRowsInSection:",
             @[@"_TtC6Twitch25AccountMenuViewController"],
             @"tableView:numberOfRowsInSection:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] AccountMenuViewController -tableView:titleForHeaderInSection:",
+            @"[ShrubTwitch] AccountMenuViewController -tableView:titleForHeaderInSection:",
             @[@"_TtC6Twitch25AccountMenuViewController"],
             @"tableView:titleForHeaderInSection:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] AccountMenuViewController -tableView:viewForHeaderInSection:",
+            @"[ShrubTwitch] AccountMenuViewController -tableView:viewForHeaderInSection:",
             @[@"_TtC6Twitch25AccountMenuViewController"],
             @"tableView:viewForHeaderInSection:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] AccountMenuViewController -tableView:heightForHeaderInSection:",
+            @"[ShrubTwitch] AccountMenuViewController -tableView:heightForHeaderInSection:",
             @[@"_TtC6Twitch25AccountMenuViewController"],
             @"tableView:heightForHeaderInSection:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] AccountMenuViewController -tableView:cellForRowAtIndexPath:",
+            @"[ShrubTwitch] AccountMenuViewController -tableView:cellForRowAtIndexPath:",
             @[@"_TtC6Twitch25AccountMenuViewController"],
             @"tableView:cellForRowAtIndexPath:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] AccountMenuViewController -tableView:didSelectRowAtIndexPath:",
+            @"[ShrubTwitch] AccountMenuViewController -tableView:didSelectRowAtIndexPath:",
             @[@"_TtC6Twitch25AccountMenuViewController"],
             @"tableView:didSelectRowAtIndexPath:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
 
         // ChannelResolver : résolution de la chaîne courante (live + VOD).
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] ChannelChatConnectionController",
+            @"[ShrubTwitch] ChannelChatConnectionController",
             @[@"Twitch.ChannelChatConnectionController",
               @"_TtC6Twitch31ChannelChatConnectionController"], nil, NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] Twitch.MessageString (VOD chat)",
+            @"[ShrubTwitch] Twitch.MessageString (VOD chat)",
             @[@"Twitch.MessageString", @"_TtC6Twitch13MessageString"], nil, NO,
             TPKHookDiagnosticGroupTwitchPlusK);
 
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] TabBarController -viewDidAppear:",
+            @"[ShrubTwitch] TabBarController -viewDidAppear:",
             @[@"_TtC6Twitch16TabBarController"], @"viewDidAppear:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] BrowseViewController -viewDidAppear:",
+            @"[ShrubTwitch] BrowseViewController -viewDidAppear:",
             @[@"_TtC6Twitch20BrowseViewController"], @"viewDidAppear:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] DiscoveryFeedTabViewController -viewDidLayoutSubviews",
+            @"[ShrubTwitch] DiscoveryFeedTabViewController -viewDidLayoutSubviews",
             @[@"_TtC6Twitch30DiscoveryFeedTabViewController"],
             @"viewDidLayoutSubviews", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] DiscoveryFeedShelfContainerViewController -viewDidLayoutSubviews",
+            @"[ShrubTwitch] DiscoveryFeedShelfContainerViewController -viewDidLayoutSubviews",
             @[@"_TtC6Twitch41DiscoveryFeedShelfContainerViewController"],
             @"viewDidLayoutSubviews", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] StandardButton -didMoveToWindow (Twitch Turbo)",
+            @"[ShrubTwitch] StandardButton -didMoveToWindow (Twitch Turbo)",
             @[@"_TtC12TwitchCoreUI14StandardButton"], @"didMoveToWindow", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] StandardButton -layoutSubviews (Twitch Turbo)",
+            @"[ShrubTwitch] StandardButton -layoutSubviews (Twitch Turbo)",
             @[@"_TtC12TwitchCoreUI14StandardButton"], @"layoutSubviews", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] FollowingViewController -viewDidLayoutSubviews (Twitch Turbo)",
+            @"[ShrubTwitch] FollowingViewController -viewDidLayoutSubviews (Twitch Turbo)",
             @[@"_TtC6Twitch23FollowingViewController"], @"viewDidLayoutSubviews", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
 
         // Lecteur : gestes, boutons delay/stats et rechargement du stream.
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] Twitch.TheaterPlayerControlsView (player)",
+            @"[ShrubTwitch] Twitch.TheaterPlayerControlsView (player)",
             @[@"Twitch.TheaterPlayerControlsView",
               @"_TtC6Twitch25TheaterPlayerControlsView"], nil, NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] IVSPlayer (reload/delay)",
+            @"[ShrubTwitch] IVSPlayer (reload/delay)",
             @[@"IVSPlayer"], nil, NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] Twitch.PlayerCoreVideoPlayer (reload)",
+            @"[ShrubTwitch] Twitch.PlayerCoreVideoPlayer (reload)",
             @[@"Twitch.PlayerCoreVideoPlayer"], nil, NO,
             TPKHookDiagnosticGroupTwitchPlusK);
 
         // GQL/WebSocket : ces interceptions alimentent les emotes, le chat,
         // Channel Points et keepLiveFeedPlaying, quel que soit l'AdBlock.
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] _TtC9TwitchKit18TKURLSessionClient -URLSession:dataTask:didReceiveData:",
+            @"[ShrubTwitch] _TtC9TwitchKit18TKURLSessionClient -URLSession:dataTask:didReceiveData:",
             @[@"_TtC9TwitchKit18TKURLSessionClient"],
             @"URLSession:dataTask:didReceiveData:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] Apollo.URLSessionClient -URLSession:dataTask:didReceiveData:",
+            @"[ShrubTwitch] Apollo.URLSessionClient -URLSession:dataTask:didReceiveData:",
             @[@"Apollo.URLSessionClient"], @"URLSession:dataTask:didReceiveData:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] Apollo.URLSessionClient -URLSession:task:didCompleteWithError:",
+            @"[ShrubTwitch] Apollo.URLSessionClient -URLSession:task:didCompleteWithError:",
             @[@"Apollo.URLSessionClient"], @"URLSession:task:didCompleteWithError:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] NSURLSession -dataTaskWithRequest:completionHandler:",
+            @"[ShrubTwitch] NSURLSession -dataTaskWithRequest:completionHandler:",
             @[@"NSURLSession"], @"dataTaskWithRequest:completionHandler:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] NSURLSession -dataTaskWithURL:completionHandler:",
+            @"[ShrubTwitch] NSURLSession -dataTaskWithURL:completionHandler:",
             @[@"NSURLSession"], @"dataTaskWithURL:completionHandler:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] NSURLSession -dataTaskWithRequest:",
+            @"[ShrubTwitch] NSURLSession -dataTaskWithRequest:",
             @[@"NSURLSession"], @"dataTaskWithRequest:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] NSURLSession -uploadTaskWithRequest:fromData:",
+            @"[ShrubTwitch] NSURLSession -uploadTaskWithRequest:fromData:",
             @[@"NSURLSession"], @"uploadTaskWithRequest:fromData:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] NSMutableURLRequest -setValue:forHTTPHeaderField:",
+            @"[ShrubTwitch] NSMutableURLRequest -setValue:forHTTPHeaderField:",
             @[@"NSMutableURLRequest"], @"setValue:forHTTPHeaderField:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] NSMutableURLRequest -setAllHTTPHeaderFields:",
+            @"[ShrubTwitch] NSMutableURLRequest -setAllHTTPHeaderFields:",
             @[@"NSMutableURLRequest"], @"setAllHTTPHeaderFields:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] NSURLSessionConfiguration -setHTTPAdditionalHeaders:",
+            @"[ShrubTwitch] NSURLSessionConfiguration -setHTTPAdditionalHeaders:",
             @[@"NSURLSessionConfiguration"], @"setHTTPAdditionalHeaders:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] NSURLSessionWebSocketTask -receiveMessageWithCompletionHandler:",
+            @"[ShrubTwitch] NSURLSessionWebSocketTask -receiveMessageWithCompletionHandler:",
             @[@"NSURLSessionWebSocketTask"], @"receiveMessageWithCompletionHandler:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] NSURLSessionWebSocketTask -sendMessage:completionHandler:",
+            @"[ShrubTwitch] NSURLSessionWebSocketTask -sendMessage:completionHandler:",
             @[@"NSURLSessionWebSocketTask"], @"sendMessage:completionHandler:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] UIView -didMoveToWindow (chat/picker)",
+            @"[ShrubTwitch] UIView -didMoveToWindow (chat/picker)",
             @[@"UIView"], @"didMoveToWindow", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         // These views are observed through UIView.didMoveToWindow, then used
         // as the concrete insertion points for custom chat and picker.
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] Twitch.ChatTranscriptView (chat custom)",
+            @"[ShrubTwitch] Twitch.ChatTranscriptView (chat custom)",
             @[@"Twitch.ChatTranscriptView"], nil, NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] RCTWebSocketModule -webSocket:didReceiveMessage:",
+            @"[ShrubTwitch] RCTWebSocketModule -webSocket:didReceiveMessage:",
             @[@"RCTWebSocketModule"], @"webSocket:didReceiveMessage:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
 
@@ -342,32 +342,32 @@ void TPKHookDiagnosticsRegisterKnownTargets(void) {
         // premier verrouillage, mais leurs vrais points d'accroche restent
         // diagnostiquables dès l'ouverture de l'écran.
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] UIApplication -supportedInterfaceOrientationsForWindow:",
+            @"[ShrubTwitch] UIApplication -supportedInterfaceOrientationsForWindow:",
             @[@"UIApplication"], @"supportedInterfaceOrientationsForWindow:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] UIViewController -supportedInterfaceOrientations",
+            @"[ShrubTwitch] UIViewController -supportedInterfaceOrientations",
             @[@"UIViewController"], @"supportedInterfaceOrientations", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] UIViewController -prefersInterfaceOrientationLocked",
+            @"[ShrubTwitch] UIViewController -prefersInterfaceOrientationLocked",
             @[@"UIViewController"], @"prefersInterfaceOrientationLocked", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
 
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] UIColor +colorWithRed:green:blue:alpha: (OLED)",
+            @"[ShrubTwitch] UIColor +colorWithRed:green:blue:alpha: (OLED)",
             @[@"UIColor"], @"colorWithRed:green:blue:alpha:", YES,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] UIColor -initWithRed:green:blue:alpha: (OLED)",
+            @"[ShrubTwitch] UIColor -initWithRed:green:blue:alpha: (OLED)",
             @[@"UIColor"], @"initWithRed:green:blue:alpha:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] RCTViewComponentView -setBackgroundColor: (OLED)",
+            @"[ShrubTwitch] RCTViewComponentView -setBackgroundColor: (OLED)",
             @[@"RCTViewComponentView"], @"setBackgroundColor:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
         TPKHookDiagnosticRegister(
-            @"[TwitchPlusK] RNSScreenContentWrapper -setBackgroundColor: (OLED)",
+            @"[ShrubTwitch] RNSScreenContentWrapper -setBackgroundColor: (OLED)",
             @[@"RNSScreenContentWrapper"], @"setBackgroundColor:", NO,
             TPKHookDiagnosticGroupTwitchPlusK);
     });
@@ -392,7 +392,7 @@ NSArray<NSDictionary<NSString *, id> *> *TPKHookDiagnosticItems(void) {
         }];
     }
     [items addObject:@{
-        @"name": @"[TwitchPlusK] Picker chat button (chat-tray-button-bits)",
+        @"name": @"[ShrubTwitch] Picker chat button (chat-tray-button-bits)",
         @"group": @(TPKHookDiagnosticGroupTwitchPlusK),
         @"applicable": @YES,
         @"present": @(TPKPickerChatButtonReady()),

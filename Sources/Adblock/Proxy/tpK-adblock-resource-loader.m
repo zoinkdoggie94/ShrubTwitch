@@ -22,7 +22,7 @@
 
     NSString *proxyAddress = TPKAdblockEffectiveProxyAddresses().firstObject;
     if (!proxyAddress.length) {
-        NSError *error = [NSError errorWithDomain:@"TwitchPlusK.Adblock"
+        NSError *error = [NSError errorWithDomain:@"ShrubTwitch.Adblock"
             code:1 userInfo:@{NSLocalizedDescriptionKey: @"No usable video proxy configured"}];
         [loadingRequest finishLoadingWithError:error];
         return YES;
@@ -34,7 +34,7 @@
         completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             if (error || !data) {
                 [loadingRequest finishLoadingWithError:error ?: [NSError
-                    errorWithDomain:@"TwitchPlusK.Adblock" code:2
+                    errorWithDomain:@"ShrubTwitch.Adblock" code:2
                     userInfo:@{NSLocalizedDescriptionKey: @"Empty proxy response"}]];
                 return;
             }

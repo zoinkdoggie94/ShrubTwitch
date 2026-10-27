@@ -816,6 +816,9 @@ static UIColor *tpk_replyTargetHighlightColor(BOOL usesMainChatOLEDStyle) {
     self = [super init];
     if (self) {
         _store = store;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+            selector:@selector(st_focusChanged:)
+            name:@"STChatFocusChanged" object:nil];
         _displayedMessages = @[];
         _messagesByID = @{};
         _cachedContentWidth = 0;
@@ -956,6 +959,8 @@ static UIColor *tpk_replyTargetHighlightColor(BOOL usesMainChatOLEDStyle) {
     [[TPKEmoteAnimationEngine sharedEngine] removeObserver:self.emotePreviewImageView];
     [self.emotePreviewOverlay removeFromSuperview];
     [[NSNotificationCenter defaultCenter] removeObserver:self
+        name:@"STChatFocusChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
         name:UIDeviceOrientationDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
         name:TPKOLEDModeDidChangeNotification object:nil];
@@ -1075,6 +1080,12 @@ static UIColor *tpk_replyTargetHighlightColor(BOOL usesMainChatOLEDStyle) {
         [cell tpk_cancelAnimationFrameRequests];
         [engine removeObserver:cell.messageLabel];
     }
+}
+
+- (void)st_focusChanged:(NSNotification *)notification {
+    // UIKit + diffable data source must only run on the main thread.
+    if (NSThread.isMainThread) [self reloadMessages];
+    else dispatch_async(dispatch_get_main_queue(), ^{ [self reloadMessages]; });
 }
 
 - (void)reloadMessages {
@@ -1332,6 +1343,25 @@ static UIColor *tpk_replyTargetHighlightColor(BOOL usesMainChatOLEDStyle) {
     }
 
     NSArray<TPKChatMessage *> *newMessages = [self.store allMessages];
+    // ShrubTwitch Chat Focus: render-only filtering. The store, moderation and
+    // replies remain untouched; users can disable filtering instantly.
+    if ([NSUserDefaults.standardUserDefaults boolForKey:@"shrub_focus_enabled"]) {
+        NSArray<NSString *> *muted = [NSUserDefaults.standardUserDefaults stringArrayForKey:@"shrub_focus_keywords"];
+        if (muted.count > 0) {
+            NSMutableArray<TPKChatMessage *> *filtered = [NSMutableArray arrayWithCapacity:newMessages.count];
+            for (TPKChatMessage *message in newMessages) {
+                BOOL hide = NO;
+                if (message.type == TPKChatMessageTypeNormal && message.rawText.length) {
+                    NSString *body = message.rawText.lowercaseString;
+                    for (NSString *word in muted) {
+                        if (word.length && [body containsString:word]) { hide = YES; break; }
+                    }
+                }
+                if (!hide) [filtered addObject:message];
+            }
+            newMessages = filtered;
+        }
+    }
 
     BOOL wasNearBottom = (self.displayedMessages.count == 0) || self.isPinnedToBottom;
 

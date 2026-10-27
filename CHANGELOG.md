@@ -1,3 +1,15 @@
+## ShrubTwitch v1.2.0 — October 2026
+
+- User-provided ShrubTwitch logo, custom native hub and Quick Panel entry.
+- New channel-scoped chat density profiles and private notes.
+- New Chat Focus keyword filtering for custom chat; no network/API filtering.
+- New channel bookmarks with add/open/delete.
+- One-action IPA workflow: `TWITCH_IPA_URL` variable/secret, push triggers, source-hash dylib cache, IPA injection and artifact uploads.
+- Preserves upstream AdBlock, emotes, chat, player options, preference keys and GPL notices.
+- No claims of crash-free operation without a macOS build and device tests.
+
+---
+
 # TwitchPlusK Changelog
 
 This file keeps the cumulative release history of TwitchPlusK, with the newest release listed first.

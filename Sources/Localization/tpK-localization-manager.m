@@ -66,7 +66,7 @@ static NSString *const kTPKLanguageDefaultsKey = @"tpk_language";
 - (void)tpk_buildTable {
     _table = @{
         @"update_title": @[@"Mise à jour disponible", @"Update available"],
-        @"update_message": @[@"TwitchPlusK %@ est disponible.\nVersion installée : %@.\nConsultez la release pour l’installation.", @"TwitchPlusK %@ is available.\nInstalled version: %@.\nSee the release for installation instructions."],
+        @"update_message": @[@"ShrubTwitch %@ est disponible.\nVersion installée : %@.\nConsultez la release pour l’installation.", @"ShrubTwitch %@ is available.\nInstalled version: %@.\nSee the release for installation instructions."],
         @"update_open": @[@"Voir la mise à jour", @"View update"],
         @"update_later": @[@"Plus tard", @"Later"],
         @"update_ignore": @[@"Ignorer cette version", @"Skip this version"],
@@ -79,7 +79,7 @@ static NSString *const kTPKLanguageDefaultsKey = @"tpk_language";
         @"common_default_suffix":           @[@" - Par défaut", @" - Default"],
 
         // ── Titres de page ──────────────────────────────────────────────
-        @"title_7tv_settings":              @[@"TwitchPlusK Settings", @"TwitchPlusK Settings"],
+        @"title_7tv_settings":              @[@"ShrubTwitch Settings", @"ShrubTwitch Settings"],
         @"title_apparence":                 @[@"Apparence", @"Appearance"],
         @"title_contenu":                   @[@"Contenu", @"Content"],
         @"title_adblock":                   @[@"Adblock", @"Adblock"], // terme déjà utilisé tel quel en français
@@ -91,8 +91,8 @@ static NSString *const kTPKLanguageDefaultsKey = @"tpk_language";
         // ── Bouton flottant / header (TPKSettingsController + TweakTPK) ──
         @"label_7tv_badge":                 @[@"7TV", @"7TV"],
         @"label_7tv_emotes":                @[@"Emotes 7TV", @"7TV Emotes"],
-        @"label_twitchplusk_badge":         @[@"TwitchPlusK", @"TwitchPlusK"],
-        @"header_7tv_settings_caps":        @[@"TWITCHPLUSK SETTINGS", @"TWITCHPLUSK SETTINGS"],
+        @"label_twitchplusk_badge":         @[@"ShrubTwitch", @"ShrubTwitch"],
+        @"header_7tv_settings_caps":        @[@"SHRUBTWITCH SETTINGS", @"SHRUBTWITCH SETTINGS"],
 
         // ── Cache (accueil → Avancé) ─────────────────────────────────────
         @"action_clear_cache":              @[@"Vider le cache", @"Clear cache"],
@@ -344,11 +344,11 @@ static NSString *const kTPKLanguageDefaultsKey = @"tpk_language";
         @"settings_export":                 @[@"Exporter les réglages", @"Export settings"],
         @"settings_export_subtitle":        @[@"Tous les réglages, favoris et proxy", @"All settings, favorites, and proxy"],
         @"settings_import":                 @[@"Importer les réglages", @"Import settings"],
-        @"settings_import_subtitle":        @[@"Restaurer un fichier TwitchPlusK", @"Restore a TwitchPlusK file"],
+        @"settings_import_subtitle":        @[@"Restaurer un fichier ShrubTwitch", @"Restore a ShrubTwitch file"],
         @"settings_export_failed_title":    @[@"Export impossible", @"Couldn't export"],
         @"settings_export_failed_message":  @[@"Impossible de créer le fichier de réglages.", @"Couldn't create the settings file."],
         @"settings_import_failed_title":    @[@"Import impossible", @"Couldn't import"],
-        @"settings_import_invalid_file":    @[@"Ce fichier n'est pas une sauvegarde TwitchPlusK valide.", @"This file isn't a valid TwitchPlusK backup."],
+        @"settings_import_invalid_file":    @[@"Ce fichier n'est pas une sauvegarde ShrubTwitch valide.", @"This file isn't a valid ShrubTwitch backup."],
         @"settings_import_success_title":   @[@"Import terminé", @"Import complete"],
         @"settings_import_success_message_format": @[@"%lu réglages importés.", @"%lu settings imported."],
 
@@ -367,7 +367,7 @@ static NSString *const kTPKLanguageDefaultsKey = @"tpk_language";
         @"diagnostics_group_emote_providers": @[@"APIs des emotes", @"Emote APIs"],
         @"diagnostics_group_proxy":          @[@"Proxy AdBlock", @"AdBlock Proxy"],
         @"diagnostics_group_vaft":           @[@"Local (VAFT) AdBlock", @"Local (VAFT) AdBlock"],
-        @"diagnostics_group_twitchplusk":    @[@"TwitchPlusK", @"TwitchPlusK"],
+        @"diagnostics_group_twitchplusk":    @[@"ShrubTwitch", @"ShrubTwitch"],
         @"diagnostics_ok":                  @[@"✓ OK", @"✓ OK"],
         @"diagnostics_missing":             @[@"✗ absente", @"✗ missing"],
         @"diagnostics_inactive":            @[@"— non actif", @"— inactive"],

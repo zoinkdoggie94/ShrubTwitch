@@ -1618,7 +1618,7 @@ static NSDictionary *TPKConnectionSetWithPayload(id connections) {
 
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
         request.timeoutInterval = 15.0;
-        [request setValue:@"TwitchPlusK/1.0" forHTTPHeaderField:@"User-Agent"];
+        [request setValue:@"ShrubTwitch/1.0" forHTTPHeaderField:@"User-Agent"];
         __block NSURLSessionDataTask *task = nil;
         task = [NSURLSession.sharedSession dataTaskWithRequest:request
             completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -2157,7 +2157,7 @@ static NSDictionary *TPKConnectionSetWithPayload(id connections) {
 
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
         request.timeoutInterval = 15.0;
-        [request setValue:@"TwitchPlusK/1.0" forHTTPHeaderField:@"User-Agent"];
+        [request setValue:@"ShrubTwitch/1.0" forHTTPHeaderField:@"User-Agent"];
         __block NSURLSessionDataTask *task = nil;
         task = [NSURLSession.sharedSession dataTaskWithRequest:request
             completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
