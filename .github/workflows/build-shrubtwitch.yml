@@ -38,13 +38,26 @@ jobs:
       - name: Checkout ShrubTwitch
         uses: actions/checkout@v4
 
+      - name: Validate saved IPA URL (before expensive setup)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$IPA_SOURCE" ]; then
+            echo 'ERROR: Set TWITCH_IPA_URL under Settings > Secrets and variables > Actions, or supply ipa_url when manually running the workflow.' >&2
+            exit 1
+          fi
+          case "$IPA_SOURCE" in
+            https://*) echo 'IPA URL provided (hidden from logs).' ;;
+            *) echo 'ERROR: TWITCH_IPA_URL must be a direct HTTPS file URL.' >&2; exit 1 ;;
+          esac
+
       # Small dylib cache: when only the IPA changes, SKIP the entire native build.
       - name: Restore compiled dylib
         id: dylib-cache
         uses: actions/cache@v4
         with:
           path: .buildcache/ShrubTwitch.dylib
-          key: shrubtwitch-dylib-v2-${{ runner.os }}-${{ hashFiles('Makefile', 'Sources/**/*') }}
+          key: shrubtwitch-dylib-v3-${{ runner.os }}-${{ hashFiles('Makefile', 'Sources/**/*') }}
 
       - name: Restore Theos and patched SDK
         if: steps.dylib-cache.outputs.cache-hit != 'true'
@@ -76,13 +89,23 @@ jobs:
           echo "SDK_VERSION=$SDK_VERSION" >> "$GITHUB_ENV"
           echo "iPhoneOS SDK ${SDK_VERSION}"
 
-      - name: Install GNU Make (native compilation only)
-        if: steps.dylib-cache.outputs.cache-hit != 'true'
+      - name: Install and verify tools before compilation
         shell: bash
         run: |
           set -euo pipefail
-          brew install make
-          echo "$(brew --prefix make)/libexec/gnubin" >> "$GITHUB_PATH"
+          # Theos signs the compiled dylib DURING make. Installing ldid after
+          # compilation caused the previous Error 127 failure.
+          if [ "${{ steps.dylib-cache.outputs.cache-hit }}" != "true" ]; then
+            brew install make ldid
+            echo "$(brew --prefix make)/libexec/gnubin" >> "$GITHUB_PATH"
+            test -f "$THEOS/makefiles/common.mk"
+            test -d "$THEOS/sdks"
+          elif ! command -v ldid >/dev/null 2>&1; then
+            # Cache hit: only the injector requires ldid; no compiler setup.
+            brew install ldid
+          fi
+          command -v ldid >/dev/null 2>&1 || { echo 'ERROR: ldid is missing; aborting before expensive compilation.' >&2; exit 1; }
+          echo "ldid available: $(command -v ldid)"
 
       - name: Compile ShrubTwitch.dylib
         if: steps.dylib-cache.outputs.cache-hit != 'true'
@@ -101,14 +124,16 @@ jobs:
           cp "$DYLIB" .buildcache/ShrubTwitch.dylib
           file .buildcache/ShrubTwitch.dylib
 
-      - name: Install injection tools
+      - name: Install isolated IPA injector dependency
         shell: bash
         run: |
           set -euo pipefail
-          brew install ldid
-          python3 -m pip install --quiet --break-system-packages 'lief==0.17.6'
-          python3 -c 'import lief; print("LIEF:", lief.__version__)'
+          python3 -m venv "$RUNNER_TEMP/shrubtwitch-python"
+          "$RUNNER_TEMP/shrubtwitch-python/bin/python" -m pip install --quiet --disable-pip-version-check --only-binary=:all: 'lief==0.17.6'
+          "$RUNNER_TEMP/shrubtwitch-python/bin/python" -c 'import lief; print("LIEF version:", lief.__version__)'
+          test -s .buildcache/ShrubTwitch.dylib
           file .buildcache/ShrubTwitch.dylib
+          command -v ldid
 
       - name: Fetch YOUR decrypted Twitch IPA
         shell: bash
@@ -120,7 +145,7 @@ jobs:
           fi
           # Do not print the URL or signed query tokens in logs.
           curl --fail --location --silent --show-error --retry 2 \
-            --connect-timeout 30 --max-time 600 "$IPA_SOURCE" -o "$RUNNER_TEMP/Twitch.ipa"
+            --connect-timeout 25 --max-time 300 "$IPA_SOURCE" -o "$RUNNER_TEMP/Twitch.ipa"
           python3 - <<'PY'
           import os, zipfile
           path = os.path.join(os.environ['RUNNER_TEMP'], 'Twitch.ipa')
@@ -136,11 +161,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 .github/scripts/inject_ipa.py \
+          "$RUNNER_TEMP/shrubtwitch-python/bin/python" .github/scripts/inject_ipa.py \
             "$RUNNER_TEMP/Twitch.ipa" \
             .buildcache/ShrubTwitch.dylib \
             "$RUNNER_TEMP/output"
-          echo "IPA_OUTPUT=$(find "$RUNNER_TEMP/output" -maxdepth 1 -name '*.ipa' -print -quit)" >> "$GITHUB_ENV"
+          IPA_FILE="$(find "$RUNNER_TEMP/output" -maxdepth 1 -name '*.ipa' -type f -print -quit)"
+          test -s "$IPA_FILE" || { echo 'ERROR: Injector produced no nonempty IPA.' >&2; exit 1; }
+          echo "IPA_OUTPUT=$IPA_FILE" >> "$GITHUB_ENV"
 
       - name: Upload finished IPA
         uses: actions/upload-artifact@v4

@@ -26,3 +26,10 @@ See **CODESPACES_SETUP.md** for the one-command upload-and-commit instructions, 
 ShrubTwitch is a fork of [TwitchPlusK by Knoks1111](https://github.com/Knoks1111/TwitchPlusK) and contributors. Upstream source and third-party components retain their copyright notices and [GPLv3 license](LICENSE); see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). You must retain the required credits and comply with the license when publishing modifications. The new ShrubTwitch feature implementation is also distributed under GPLv3.
 
 The Twitch app and Twitch trademarks belong to their respective owners. Only the open-source tweak is in this repository; users supply their own legitimately obtained decrypted IPA for local patching.
+
+
+### ShrubTwitch 1.2 build fix
+
+The patched workflow places `ldid`/GNU Make setup **before** the Theos compile, avoiding the previously reported `ldid: command not found` after linking. It prechecks `TWITCH_IPA_URL`, uses a dedicated Python virtual environment for the IPA injector, and validates a non-empty IPA artifact. Cached source builds skip the native compilation. See [CODESPACES_SETUP.md](CODESPACES_SETUP.md) for the updated one-command deployment.
+
+GitHub runner startup, large IPA downloads, and first-time compilation may exceed five minutes; actual compile and on-device checks must be performed on GitHub/macOS and iOS.

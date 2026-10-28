@@ -1,13 +1,13 @@
-# ShrubTwitch 1.2 — iPad / Codespaces setup
+# ShrubTwitch 1.2 — Build Fix / Codespaces setup
 
 ## 1. Upload and deploy in ONE command
 
 1. Open **your ShrubTwitch fork** on GitHub → **Code → Codespaces → Create codespace on main** (or open your existing Codespace).
-2. Drag/upload **ShrubTwitch-1.2.zip** to the **top-level/root** of your repository in the Codespaces Explorer. The ZIP should appear beside `Makefile` and `README.md`.
+2. Drag/upload **ShrubTwitch-1.2-BuildFix.zip** to the **top-level/root** of your repository in the Codespaces Explorer. The ZIP should appear beside `Makefile` and `README.md`.
 3. Open a Codespaces Terminal, make sure you're at the repository root (`cd /workspaces/$(basename "$PWD")` is NOT needed if already there) and run this **single command**:
 
 ```bash
-unzip -oq ShrubTwitch-1.2.zip -d /tmp/shrubtwitch-v12 && cp -a /tmp/shrubtwitch-v12/ShrubTwitch-main/. ./ && rm -f ShrubTwitch-1.2.zip && git add -A && (git diff --cached --quiet || git -c user.name="ShrubHub" -c user.email="shrubhub@users.noreply.github.com" commit -m "ShrubTwitch 1.2: native features and fast IPA workflow") && git push origin HEAD
+unzip -oq ShrubTwitch-1.2-BuildFix.zip -d /tmp/shrubtwitch-v12fix && cp -a /tmp/shrubtwitch-v12fix/ShrubTwitch-main/. ./ && rm -f .github/workflows/build-dylib.yml .github/workflows/build-ipa.yml ShrubTwitch-1.2-BuildFix.zip && git add -A && (git diff --cached --quiet || git -c user.name="ShrubHub" -c user.email="shrubhub@users.noreply.github.com" commit -m "Fix ldid signing and speed up ShrubTwitch 1.2 IPA builds") && git push origin HEAD
 ```
 
 The terminal returns after it has copied the files, committed changes and pushed them to your fork. It does NOT execute or require a PC/macOS build locally. **The command overwrites files with matching names** in your currently opened fork. Commit/backup any uncommitted work first.
@@ -43,3 +43,12 @@ When changes are pushed to `main` in `Sources/`, `Makefile`, the workflow/inject
 ## 5. Where settings are
 
 Open ShrubTwitch settings from the existing integrated entry. **Quick** opens quick actions. The optional floating menu button supports **long press** for Quick Panel. Chat Focus only affects the custom chat, and chat-density profiles require an active channel. Look in the native Control Center for the new feature pages.
+
+## 6. Fix included after Error 127
+
+- The previous workflow installed Homebrew `ldid` **after** `make`, but Theos signs the dylib as part of `make`.
+- The fixed workflow installs and verifies `ldid` **before** compilation; also installs GNU Make in the same step when compiling.
+- Uses a virtual environment with a prebuilt LIEF wheel for IPA injection to avoid Python's externally managed package errors.
+- Cached `.dylib` builds bypass Theos setup and compilation; manual runs reuse your repository's saved `TWITCH_IPA_URL`.
+- Fails early if the IPA URL is not configured. This addresses the reported error but does **not** guarantee five-minute builds or runtime compatibility.
+- Older `build-dylib.yml` / `build-ipa.yml` workflows from upstream are removed by the install command to avoid confusing duplicate entries in Actions.
