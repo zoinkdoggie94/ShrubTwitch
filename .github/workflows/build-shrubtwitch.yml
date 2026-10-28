@@ -17,7 +17,7 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: shrubtwitch-${{ github.ref }}
@@ -169,28 +169,35 @@ jobs:
           test -s "$IPA_FILE" || { echo 'ERROR: Injector produced no nonempty IPA.' >&2; exit 1; }
           echo "IPA_OUTPUT=$IPA_FILE" >> "$GITHUB_ENV"
 
-      - name: Upload finished IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: ShrubTwitch-IPA-${{ github.run_number }}
-          path: ${{ env.IPA_OUTPUT }}
-          retention-days: 3
-          if-no-files-found: error
-          compression-level: 0
-
-      - name: Upload standalone dylib
-        uses: actions/upload-artifact@v4
-        with:
-          name: ShrubTwitch-dylib-${{ github.run_number }}
-          path: .buildcache/ShrubTwitch.dylib
-          retention-days: 7
-          compression-level: 0
-
-      - name: Summary
+      - name: Publish public IPA + dylib GitHub Release
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          echo '## ShrubTwitch build complete' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Download the **ShrubTwitch-IPA** artifact from this workflow run.' >> "$GITHUB_STEP_SUMMARY"
-          echo '' >> "$GITHUB_STEP_SUMMARY"
-          echo 'The IPA is patched/ad-hoc signed, NOT certificate-signed for sideloading. Sign it with your usual iOS signer before installing.' >> "$GITHUB_STEP_SUMMARY"
-          echo 'This workflow does not post or publish the Twitch IPA to GitHub Releases.' >> "$GITHUB_STEP_SUMMARY"
+          set -euo pipefail
+          command -v gh >/dev/null || { echo 'ERROR: GitHub CLI (gh) missing.' >&2; exit 1; }
+          test -n "${IPA_OUTPUT:-}" && test -s "$IPA_OUTPUT" || { echo 'ERROR: Missing IPA; refusing to create a release.' >&2; exit 1; }
+          test -s .buildcache/ShrubTwitch.dylib || { echo 'ERROR: Missing dylib; refusing to create a release.' >&2; exit 1; }
+          TAG="v1.2.0-build.${GITHUB_RUN_NUMBER}-r${GITHUB_RUN_ATTEMPT}"
+          NOTES="$RUNNER_TEMP/shrubtwitch-release-notes.md"
+          cat > "$NOTES" <<EOF
+          ## ShrubTwitch v1.2.0
+
+          Publicly available downloads:
+          - **ShrubTwitch IPA** — patched iOS app, requires signing with your own certificate before installing.
+          - **ShrubTwitch.dylib** — standalone tweak library.
+
+          Source commit: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}
+
+          Source code and third-party attribution are in this repository.
+          EOF
+          gh release create "$TAG" "$IPA_OUTPUT" .buildcache/ShrubTwitch.dylib \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "ShrubTwitch v1.2.0 · Build #${GITHUB_RUN_NUMBER}" \
+            --notes-file "$NOTES" --latest
+          {
+            echo '## Public ShrubTwitch IPA release published'
+            echo "Release: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
+            echo 'Both the patched IPA and dylib are publicly downloadable from **Releases**.'
+            echo 'No GitHub Actions artifacts were uploaded.'
+          } >> "$GITHUB_STEP_SUMMARY"
